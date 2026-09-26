@@ -1,0 +1,14 @@
+# Python 3.12 - install into the project venv:  python -m venv .venv && .venv\Scripts\pip install -r requirements.txt
+pandas==2.2.0
+numpy==1.26.4
+scipy==1.15.3
+matplotlib==3.10.1
+openpyxl==3.1.5
+statsmodels==0.15.0
+pmdarima==2.1.1
+lifelines==0.30.3
+scikit-learn==1.9.1
+joblib==1.6.0
+tabulate==0.10.0
+# tests
+pytest==9.1.1

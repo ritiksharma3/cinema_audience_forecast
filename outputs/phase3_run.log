@@ -1,0 +1,14 @@
+split sizes: {'train': 337, 'val': 31, 'test': 28}
+  SES                          val MAPE   37.6%  RMSE    13,679  [0.7s]  ETS(error=A, trend=N, seasonal=N)
+  Holt_linear                  val MAPE   52.7%  RMSE    13,361  [0.7s]  ETS(error=A, trend=A, seasonal=N)
+  HoltWinters_additive         val MAPE   33.6%  RMSE    13,217  [0.7s]  ETS(error=A, trend=A, seasonal=A, m=7)
+  HoltWinters_multiplicative   val MAPE   30.5%  RMSE    15,025  [0.6s]  ETS(error=M, trend=A, seasonal=M, m=7)
+  MLR_with_lead                val MAPE   36.3%  RMSE    12,517  [1.1s]  OLS: lag1, lag7, weekday dummies, holiday, dec_surge, booknow_missing, lead
+  MLR_no_lead                  val MAPE   34.3%  RMSE    11,840  [0.5s]  OLS: lag1, lag7, weekday dummies, holiday, dec_surge, booknow_missing
+  AR                           val MAPE   48.1%  RMSE    17,854  [7.1s]  ARMA(7,0) + const on Δ7 log demand  [= ARIMA(7,0,0)(0,1,0)7]
+  ARMA                         val MAPE   57.6%  RMSE    18,358  [9.6s]  ARMA(7,3) + const on Δ7 log demand  [= ARIMA(7,0,3)(0,1,0)7]
+  ARIMA                        val MAPE   45.9%  RMSE    18,456  [8.5s]  ARIMA(7, 1, 1) trend=t on log demand
+  SARIMA                       val MAPE   31.1%  RMSE    12,755  [7.2s]  SARIMA(1, 0, 0)(1, 1, 1, 7) trend=n on log demand
+  SARIMAX_with_lead            val MAPE   28.1%  RMSE    11,221  [12.5s]  SARIMAX(1, 1, 1)(1, 0, 0, 7) trend=n + exog on log demand
+  SARIMAX_no_lead              val MAPE   37.3%  RMSE     9,284  [12.5s]  SARIMAX(1, 1, 1)(1, 0, 0, 7) trend=n + exog on log demand
+Wrote D:\JioInstitute\Term 4\Time Series\cinema_audience_original_dataset\outputs\excel\model_inference_tables.xlsx

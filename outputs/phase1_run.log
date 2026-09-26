@@ -1,0 +1,30 @@
+Loading raw files
+  [load booknow_booking.csv] None -> 68336  
+  [load booknow_theaters.csv] None -> 829  
+  [load booknow_visits.csv] None -> 214046  
+  [load cinePOS_booking.csv] None -> 1641966  
+  [load cinePOS_theaters.csv] None -> 4690  
+  [load movie_theater_id_relation.csv] None -> 150  
+Cleaning bookings
+  [booknow_visits: collapse duplicate theater-dates] 214046 -> 213871  
+Daily aggregation
+  [booknow_booking -> daily] 68336 -> 340  
+  [cinePOS_booking -> daily] 1641966 -> 424  
+  [complete daily date index] None -> 424  2023-01-01 .. 2024-02-28
+  [join cinePOS daily] 424 -> 424  
+  [join booknow daily] 424 -> 424  
+Overlap check
+  [overlap: booknow rows at mapped theaters] 68336 -> 26238  
+  [overlap: cinePOS rows at mapped theaters] 1641966 -> 23780  
+  [overlap: exact record matches (both systems)] 26238 -> 3151  same theater pair + show hour + booking hour + tickets
+  [join overlap daily] 424 -> 424  
+Theater metadata
+  [booknow_theaters: drop blank IDs] 829 -> 314  
+  [booknow_theaters: dedupe IDs] 314 -> 314  
+  [theater_dim (both systems, incl. Unknown)] None -> 13771  
+  [bookings joined to theater_dim (both systems)] 1710302 -> 1710302  inner join; every booking matched a dim row (Unknown included)
+  [join theater_type shares] 424 -> 424  
+Calendar
+Survival extract
+  [theater_survival rows (one per theater per system)] None -> 13462  
+Wrote D:\JioInstitute\Term 4\Time Series\cinema_audience_original_dataset\outputs\excel\combined_data.xlsx and D:\JioInstitute\Term 4\Time Series\cinema_audience_original_dataset\outputs\excel\theater_survival.xlsx
