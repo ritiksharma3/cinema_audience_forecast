@@ -39,5 +39,5 @@ Shared code: `config.py` (paths and constants), `quality_log.py`, `data_access.p
 - Weekly seasonality dominates: Saturday ≈ 2.1× and Tuesday ≈ 0.6× the weekly mean. Model log demand, with D = 1.
 - Weekday seasonal index: Sat 171%, Sun 154%, Tue 58%; weekday ANOVA F = 14.7 (p < 0.001), 78.3 once the monthly level is removed.
 - Trend + weekday-dummy regression (reduced: trend, Tue, Wed, Sat, Sun) has the best validation MAPE (23.1%) of the 13 models.
-- Best single model on test: SARIMAX_no_lead (RMSE 4,584). The simple average (4,601, best MAPE 13.8%) and Bates-Granger (4,800) are statistically tied with it (Diebold-Mariano p > 0.7). Regression-based (Granger-Ramanathan) weights overfit.
+- No model dominates on test: SARIMAX_no_lead has the lowest RMSE (4,584), the simple average the lowest MAPE (13.8%), and Bates-Granger (4,800 / 14.1%) sits between them; Diebold-Mariano cannot separate them (p >= 0.71). Bates-Granger stays the final forecast because it was chosen on validation before the test was opened. Regression-based (Granger-Ramanathan) weights overfit.
 - 95.3% of theaters are still active one year after their first booking. booknow theaters have ~9× the hazard (concentrated early, so proportional hazards is violated); theaters without metadata have 2.9×.
