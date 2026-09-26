@@ -131,7 +131,38 @@ def fit_hw_mul(hist, future):
                     "Additive trend, multiplicative weekly seasonality and multiplicative errors.")
 
 
-# ------------------------------------------------------------------ 4. multiple linear regression
+# ------------------------------------------------------------------ 4a. trend + seasonal-dummy regression
+def trend_dummy_design(idx, start):
+    """const + linear trend (months since `start`) + weekday dummies (Monday = base)."""
+    X = pd.get_dummies(idx.dayofweek, prefix="dow", drop_first=True).astype(float)
+    X.columns = ["dow_Tue", "dow_Wed", "dow_Thu", "dow_Fri", "dow_Sat", "dow_Sun"]
+    X.index = idx
+    X.insert(0, "trend_month", (idx - pd.Timestamp(start)).days / 30.0)
+    return sm.add_constant(X)
+
+
+def fit_trend_dummy_reg(hist, future, keep=None):
+    """Classical decomposition regression: log demand ~ const + linear trend + weekday dummies (OLS, HAC(7) SE).
+    `keep` restricts the regressors (used for the reduced, significant-terms-only model)."""
+    y, adj = univariate_target(hist)
+    ly = np.log(y)
+    Xh, Xf = trend_dummy_design(hist.index, hist.index[0]), trend_dummy_design(future.index, hist.index[0])
+    if keep is not None:
+        Xh, Xf = Xh[keep], Xf[keep]
+    r = sm.OLS(ly, Xh).fit(cov_type="HAC", cov_kwds={"maxlags": M})
+    pr = r.get_prediction(Xf).summary_frame(alpha=0.05)
+    pr.index = future.index
+    fc = pd.DataFrame({"mean": np.exp(pr["mean"]), "lower": np.exp(pr["obs_ci_lower"]), "upper": np.exp(pr["obs_ci_upper"])})
+    params = _param_table(r.params.index, r.params, r.bse, r.pvalues)
+    notes = ("Trend + seasonal-dummy regression on log demand (exp(coef) = multiplier vs Monday). "
+             "No lags, so residual autocorrelation is expected; HAC(7) standard errors. " + adj)
+    name = "Trend_Dummy_Reg" if keep is None else "Trend_Dummy_Reg_reduced"
+    return ModelFit(name, "OLS: const + linear trend + weekday dummies" + ("" if keep is None else f" (kept: {', '.join(keep[1:])})"),
+                    params, r.aic, r.bic, r.resid, fc, "log", notes=notes,
+                    extra=dict(r2=r.rsquared, r2_adj=r.rsquared_adj, ols=r))
+
+
+# ------------------------------------------------------------------ 4b. multiple linear regression
 def _fit_mlr(name, hist, future, use_lead):
     """log demand ~ lag1 + lag7 of log demand + weekday dummies + holiday + Dec-surge + booknow_missing (+ lead).
     Multi-step forecasts are recursive: forecasted log demand is fed back as the lag."""
@@ -299,6 +330,6 @@ def fit_sarimax_no_lead(hist, future):
     return _sarimax("SARIMAX_no_lead", hist, future, use_lead=False)
 
 
-UNIVARIATE = [fit_ses, fit_holt, fit_hw_add, fit_hw_mul, fit_ar, fit_arma, fit_arima, fit_sarima]
-MODELS = [fit_ses, fit_holt, fit_hw_add, fit_hw_mul, fit_mlr, fit_mlr_no_lead, fit_ar, fit_arma,
+UNIVARIATE = [fit_ses, fit_holt, fit_hw_add, fit_hw_mul, fit_trend_dummy_reg, fit_ar, fit_arma, fit_arima, fit_sarima]
+MODELS = [fit_ses, fit_holt, fit_hw_add, fit_hw_mul, fit_trend_dummy_reg, fit_mlr, fit_mlr_no_lead, fit_ar, fit_arma,
           fit_arima, fit_sarima, fit_sarimax, fit_sarimax_no_lead]

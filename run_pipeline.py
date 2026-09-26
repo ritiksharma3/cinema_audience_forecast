@@ -1,4 +1,4 @@
-"""End-to-end runner: python run_pipeline.py --phase 1 | 2 | 3 | 4 | 5 | all"""
+"""End-to-end runner: python run_pipeline.py --phase 1 | 2 | 3 | 4 | 5 | 6 | all"""
 import argparse
 import sys
 import warnings
@@ -9,7 +9,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--phase", default="all", choices=["1", "2", "3", "4", "5", "all"])
+    ap.add_argument("--phase", default="all", choices=["1", "2", "3", "4", "5", "6", "all"])
     phase = ap.parse_args().phase
     if phase in ("1", "all"):
         from src.phase1_merge import run_phase1
@@ -26,6 +26,9 @@ def main():
     if phase in ("5", "all"):
         from src.phase5_survival import run_phase5
         run_phase5()
+    if phase in ("6", "all"):
+        from src.phase6_classical import run_phase6
+        run_phase6()
 
 
 if __name__ == "__main__":
